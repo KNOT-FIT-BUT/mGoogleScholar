@@ -721,6 +721,70 @@ def basicSearch(keyword):
 	for h in range(0,1):
 		result_dic[insert_key]=parsed_list
 		insert_key=insert_key+1
+	   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
+   ''' spravne extrakcia '''
+	url="http://www.utexas.edu/world/univ/alpha/"
+	page=urllib2.urlopen(url)
+	soup = BeautifulSoup(page.read())
+	universities=soup.findAll('a',{'class':'institution'})
+	for eachuniversity in universities:
+	print eachuniversity['href']+","+eachuniversity.string
+''' '''
 	return result_dic
 
 ahoj = basicSearch("cau")
