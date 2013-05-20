@@ -117,8 +117,7 @@ def sendUrlGoogle_BASIC(keywordsPhrase):
 	return http_req
 
 
-ahoj = basicSearch("moje")
-sys.exit(0)
+
 
 
 
