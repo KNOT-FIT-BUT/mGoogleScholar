@@ -108,13 +108,20 @@ def basicSearch(keyword):
 				pom_string=re.sub(r'\s+', ' ', pom_string)
 				pom_index=0
 				pom_index2=0
-				
-				
+				pom_index3=0
+				pom_string3=""
 				
 				for m in re.finditer(",", pom_string):
 					pom_index= m.start()
 				for m in re.finditer( "-", pom_string):
 					pom_index2=m.start()
+				#parsovanie nazvu vydavatelstva
+				
+				
+				
+				pom_string3=pom_string[pom_index2+2:len(pom_string)-2]
+				list_authors.append(pom_string3)
+				
 				pom_string2=pom_string[pom_index+2:pom_index2-1]
 				pom_string=pom_string[:pom_index]
 				
