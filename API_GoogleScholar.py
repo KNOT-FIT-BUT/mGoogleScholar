@@ -37,11 +37,13 @@ def basicSearch(keyword):
 	base_url="http://scholar.google.cz"
 	response=""
 	base_url=sendUrlGoogle_BASIC(keyword)
+	cit_link=""
+	pom_link=""
 	#time.sleep(15)
 	try:
 		response = urllib2.urlopen(urllib2.Request(base_url, headers={"User-Agent":"Mozilla/5.0 Cheater/1.0"})) 
 	except Exception:
-		raise ValueError("Chyba v pripojeni")
+		raise Exception("Connection error")
 	
 		
 	soup=BeautifulSoup(response)
@@ -68,6 +70,8 @@ def basicSearch(keyword):
 	pom_list=[]
 	pom_string=""
 	name_of_pub=""
+	lib_link=""
+	pom_link="http://scholar.google.cz"
 	pom_string=unicode(pom_string)
 	while (True):
 		list_authors=[]
@@ -145,7 +149,7 @@ def basicSearch(keyword):
 				
 				pom_string=""
 			
-			#parsovanie autora
+			#parsovanie abstraktu
 			authors= moje.find('div', attrs={'class' : 'gs_rs'})
 		
 			if (not authors):
@@ -176,12 +180,20 @@ def basicSearch(keyword):
 		
 			
 		
-			#poctu citacii clanku
+			#poctu citacii clanku a parsovanie odkazu na citacie
 			pubvenue=moje.find('div', attrs={'class' : 'gs_fl'})
 		
 			pubvenue=str(pubvenue)
 			pubvenue=BeautifulSoup(pubvenue)
 			nazov=pubvenue.findAll('a')
+			
+			cit_link=str(nazov.get('href'))
+			if (not cit_link):
+				list_authors.append("0")
+			else:
+				pom_link="http://scholar.google.cz"
+				pom_link=pom_link+cit_link
+				list_authors.append(pom_link)
 			
 			if (not nazov):
 				list_authors.append("0")
@@ -197,7 +209,14 @@ def basicSearch(keyword):
 			
 				pom_string=""
 			
-			
+			#parsovanie odkazu do kniznice kde sa nachadza citacia
+			lib_link=moje.find('a')
+			if (not lib_link):
+				list_authors.append("0")
+			else:
+				list_authors.append((str(lib_link.get('href')))))
+				
+				
 			
 			
 			
@@ -229,7 +248,7 @@ def basicSearch(keyword):
 			try:
 				html_file=urllib2.urlopen(base_url)
 			except Exception:
-				raise RuntimeError("Connection error")
+				raise Exception("Connection error")
 			soup=BeautifulSoup(html_file)
 	
 	#koniec parsovania funkcii
@@ -252,7 +271,8 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 	time.sleep(15)
 	try:
 		response = urllib2.urlopen(urllib2.Request(base_url, headers={"User-Agent":"Mozilla/5.0 Cheater/1.0"})) 
-	except Exception:raise
+	except Exception:
+		raise Exception("Connection error")
 	soup=""
 	soup=BeautifulSoup(response)
 	vysledok=""
@@ -348,7 +368,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 				
 				pom_string=""
 			
-			#parsovanie autora
+			#parsovanie abstraktu
 			authors= moje.find('div', attrs={'class' : 'gs_rs'})
 		
 			if (not authors):
@@ -379,12 +399,20 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 		
 			
 		
-			#poctu citacii clanku
+			#poctu citacii clanku a parsovanie odkazu na citacie
 			pubvenue=moje.find('div', attrs={'class' : 'gs_fl'})
 		
 			pubvenue=str(pubvenue)
 			pubvenue=BeautifulSoup(pubvenue)
 			nazov=pubvenue.findAll('a')
+			
+			cit_link=str(nazov.get('href'))
+			if (not cit_link):
+				list_authors.append("0")
+			else:
+				pom_link="http://scholar.google.cz"
+				pom_link=pom_link+cit_link
+				list_authors.append(pom_link)
 			
 			if (not nazov):
 				list_authors.append("0")
@@ -400,6 +428,12 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 			
 				pom_string=""
 			
+			#parsovanie odkazu do kniznice kde sa nachadza citacia
+			lib_link=moje.find('a')
+			if (not lib_link):
+				list_authors.append("0")
+			else:
+				list_authors.append((str(lib_link.get('href')))))
 			
 			
 			
@@ -432,7 +466,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 			try:
 				html_file=urllib2.urlopen(base_url)
 			except Exception:
-				raise RuntimeError("Connection error")
+				raise Exception("Connection error")
 			soup=BeautifulSoup(html_file)
 	
 	#koniec parsovania funkcii
