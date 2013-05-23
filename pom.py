@@ -10,20 +10,17 @@ import sys
 import urllib2
 import re
 import time
-"""
-     @param keyword: Vyhladaci retazec pre sluzbu
-        CiteSeerX. Moze obsahovat viac klucovych
-        slov pre vyhladavanie
-     @return: Slovnik pricom kazda polozka odpoveda jednemu
-        vysledku vyhladavania so vsetkymi informaciami o nej
-"""
+'''
+Funkcia, ktora splna zakladne vyhladavanie pomocou sluzby CiteSeerX
+@param:keyword - vyhladavacia fraza
+@return: asociativne_pole
+'''
 
- 
+
 def basicSearch(keyword):
-	result_dic=dict()
-	
-	
-	author_parse=""
+
+	result_dic = dict()
+    author_parse=""
 	title_parse=""
 	date_parse=""
 	vol_parse=""
@@ -42,7 +39,7 @@ def basicSearch(keyword):
 	base_url=sendUrlGoogle_BASIC(keyword)
 	cit_link=""
 	pom_link=""
-	#time.sleep(15)
+	# time.sleep(15)
 	try:
 		response = urllib2.urlopen(urllib2.Request(base_url, headers={"User-Agent":"Mozilla/5.0 Cheater/1.0"})) 
 	except Exception:
@@ -87,7 +84,7 @@ def basicSearch(keyword):
 		for i in range(0,number_of_cycles):
 			moje=BeautifulSoup(str(results[i]))
 			
-			#parsovanie nazvu knihy
+			# parsovanie nazvu knihy
 			
 			name_of_pub= moje.find('div', attrs={'class' : 'gs_a'})
 			
@@ -103,7 +100,7 @@ def basicSearch(keyword):
 					pom_string=pom_string + unicode(pom_list[p])
 				pom_string2=str(name_of_pub.contens)
 				
-				#odstranenie prebytocnych znakov
+				# odstranenie prebytocnych znakov
 				pom_string=pom_string.replace("<em>","")
 				pom_string=pom_string.replace("</em>","")
 				pom_string=pom_string.replace("</b>","")
@@ -122,7 +119,7 @@ def basicSearch(keyword):
 					pom_index= m.start()
 				for m in re.finditer( "-", pom_string):
 					pom_index2=m.start()
-				#parsovanie nazvu vydavatelstva
+				# parsovanie nazvu vydavatelstva
 				
 				
 				
@@ -139,7 +136,7 @@ def basicSearch(keyword):
 				list_authors.append(unicode(pom_string))
 				
 				
-				#ulozenie roku vydania
+				# ulozenie roku vydania
 				
 					
 				
@@ -152,7 +149,7 @@ def basicSearch(keyword):
 				
 				pom_string=""
 			
-			#parsovanie abstraktu
+			# parsovanie abstraktu
 			authors= moje.find('div', attrs={'class' : 'gs_rs'})
 		
 			if (not authors):
@@ -183,7 +180,7 @@ def basicSearch(keyword):
 		
 			
 		
-			#poctu citacii clanku a parsovanie odkazu na citacie
+			# poctu citacii clanku a parsovanie odkazu na citacie
 			pubvenue=moje.find('div', attrs={'class' : 'gs_fl'})
 		
 			pubvenue=str(pubvenue)
@@ -212,32 +209,32 @@ def basicSearch(keyword):
 			
 				pom_string=""
 			
-			#parsovanie odkazu do kniznice kde sa nachadza citacia
+			# parsovanie odkazu do kniznice kde sa nachadza citacia
 			lib_link=moje.find('a')
 			if (not lib_link):
 				list_authors.append("0")
 			else:
-				list_authors.append( (str (lib_link.get('href')))))
+				list_authors.append((str(lib_link.get('href')))))
 				
 				
 			
 			
 			
-			#vlozenie do slovnika
+			# vlozenie do slovnika
 			result_dic[dic_index]=list_authors
 			list_authors=[]
 			dic_index=dic_index+1
-		#koniec prehladavanie hmtl suboru
-		#snazim sa najst odkaz na dalsiu stranku
+		# koniec prehladavanie hmtl suboru
+		# snazim sa najst odkaz na dalsiu stranku
 		
 		nazov=soup.findAll('table')
 		nazov=str(nazov)
 		nazov=BeautifulSoup(nazov)
 		nazov=nazov.find('a')
-		#pokial som nenasiel ziadny koncim
+		# pokial som nenasiel ziadny koncim
 		if (len(nazov) <2):
 			break
-		#inak prejdem na dalsiu stranku
+		# inak prejdem na dalsiu stranku
 		else:
 			
 			
@@ -254,24 +251,18 @@ def basicSearch(keyword):
 				raise Exception("Connection error")
 			soup=BeautifulSoup(html_file)
 	
-	#koniec parsovania funkcii
+	# koniec parsovania funkcii
 	return result_dic
 
-"""
-    @param AllWords: Vyhladania podla vsetkych slov
-    @param WithCorrectPhrase: Vyhladavanie podla fraze 
-	@param LeastOneWord: Vyhladavanie podla aspon jedneho slova 
-    @param WithoutWods: Nezahrnutie slov do vysledkov vyhladavania
-    @param Occurence: 0-1 Vyskyt v clanku alebo v nazve diela
-    @param Author: Meno autora podla ktoreho sa ma vyhladavat
-    @param Venue: Vyhladavanie podla zanra diela
-    @param Startyear: Zaciatny rok podla ktoreho sa ma vyhladavat
-	@param Endyear: Koncovy rok podla ktoreho sa maju diela vyhladavat
-	@return: Slovnik pricom kazda polozka odpoveda jednemu
-		vysledku vyhladavania so vsetkymi informaciami o nej
-"""
 
 
+'''
+Funkcia, ktora splna zakladne vyhladavanie pomocou sluzby GoogleScholar
+
+
+@return:asociativne_pole
+@return: asociativne_pole
+'''	
 def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurence,Author,Venue,StartYear,EndYear):
 	
 	
@@ -319,8 +310,8 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 		for i in range(0,number_of_cycles):
 			moje=BeautifulSoup(str(results[i]))
 			
-			#parsovanie nazvu knihy
-			 #a class="remove doc_details"
+			# parsovanie nazvu knihy
+			 # a class="remove doc_details"
 			name_of_pub= moje.find('div', attrs={'class' : 'gs_a'})
 			
 			if (not name_of_pub):
@@ -335,7 +326,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 					pom_string=pom_string + unicode(pom_list[p])
 				pom_string2=str(name_of_pub.contens)
 				
-				#odstranenie prebytocnych znakov
+				# odstranenie prebytocnych znakov
 				pom_string=pom_string.replace("<em>","")
 				pom_string=pom_string.replace("</em>","")
 				pom_string=pom_string.replace("</b>","")
@@ -364,7 +355,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 				list_authors.append(unicode(pom_string))
 				
 				
-				#ulozenie roku vydania
+				# ulozenie roku vydania
 				
 					
 				
@@ -377,7 +368,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 				
 				pom_string=""
 			
-			#parsovanie abstraktu
+			# parsovanie abstraktu
 			authors= moje.find('div', attrs={'class' : 'gs_rs'})
 		
 			if (not authors):
@@ -408,7 +399,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 		
 			
 		
-			#poctu citacii clanku a parsovanie odkazu na citacie
+			# poctu citacii clanku a parsovanie odkazu na citacie
 			pubvenue=moje.find('div', attrs={'class' : 'gs_fl'})
 		
 			pubvenue=str(pubvenue)
@@ -437,7 +428,7 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 			
 				pom_string=""
 			
-			#parsovanie odkazu do kniznice kde sa nachadza citacia
+			# parsovanie odkazu do kniznice kde sa nachadza citacia
 			lib_link=moje.find('a')
 			if (not lib_link):
 				list_authors.append("0")
@@ -447,21 +438,21 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 			
 			
 			
-			#vlozenie do slovnika
+			# vlozenie do slovnika
 			result_dic[dic_index]=list_authors
 			list_authors=[]
 			dic_index=dic_index+1
-		#koniec prehladavanie hmtl suboru
-		#snazim sa najst odkaz na dalsiu stranku
+		# koniec prehladavanie hmtl suboru
+		# snazim sa najst odkaz na dalsiu stranku
 		
 		nazov=soup.findAll('table')
 		nazov=str(nazov)
 		nazov=BeautifulSoup(nazov)
 		nazov=nazov.find('a')
-		#pokial som nenasiel ziadny koncim
+		# pokial som nenasiel ziadny koncim
 		if (len(nazov) <2):
 			break
-		#inak prejdem na dalsiu stranku
+		# inak prejdem na dalsiu stranku
 		else:
 			
 			
@@ -478,24 +469,12 @@ def extendedSearch(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurenc
 				raise Exception("Connection error")
 			soup=BeautifulSoup(html_file)
 	
-	#koniec parsovania funkcii
+	# koniec parsovania funkcii
 	return result_dic
 	
 	
-"""
-    @param AllWords: Vyhladania podla vsetkych slov
-    @param WithCorrectPhrase: Vyhladavanie podla fraze 
-	@param LeastOneWord: Vyhladavanie podla aspon jedneho slova 
-    @param WithoutWods: Nezahrnutie slov do vysledkov vyhladavania
-    @param Occurence: 0-1 Vyskyt v clanku alebo v nazve diela
-    @param Author: Meno autora podla ktoreho sa ma vyhladavat
-    @param Venue: Vyhladavanie podla zanra diela
-    @param Startyear: Zaciatny rok podla ktoreho sa ma vyhladavat
-	@param Endyear: Koncovy rok podla ktoreho sa maju diela vyhladavat
-	@return: Spravny vyparsovane url 
-"""
-
-def __sendGoogle_EXTENDED(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurence,Author,Venue,StartYear,EndYear):
+# fukcia zformuje posielanie url na zakladne pokrocileho vyhladavania
+def sendGoogle_EXTENDED(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,Occurence,Author,Venue,StartYear,EndYear):
 	http_req=""
 	try:
 		AllWords=AllWords.strip()
@@ -525,11 +504,8 @@ def __sendGoogle_EXTENDED(AllWords,WithCorrectPhrase,LeastOneWord,WithoutWords,O
 	return http_req
 
 
-"""
-    @param keywordsPhrase: Vyhladavacia fraza
-	@return: Spravny vyparsovane url 
-"""
-def __sendUrlGoogle_BASIC(keywordsPhrase):
+# funkckia url pre zakladne vyhladavanie na zakladne vyhladavacej fraze
+def sendUrlGoogle_BASIC(keywordsPhrase):
 	http_req=""
 	response=""
 	try:
@@ -545,3 +521,9 @@ def __sendUrlGoogle_BASIC(keywordsPhrase):
 
 ahoj=basicSearch("nieco")
 sys.exit(0)
+
+
+
+
+
+
