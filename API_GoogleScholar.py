@@ -81,7 +81,7 @@ def basicSearch(keyword):
 			moje=BeautifulSoup(str(results[i]))
 			
 			#parsovanie nazvu knihy
-			 #a class="remove doc_details"
+			
 			name_of_pub= moje.find('div', attrs={'class' : 'gs_a'})
 			
 			if (not name_of_pub):
