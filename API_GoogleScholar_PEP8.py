@@ -5,7 +5,7 @@
     Implementuje zakladne vyhladavanie pomocou tejto sluzby
     Modul obsahuje 2 vyhladavacie funkcie: basicSearch a extendedSearch
 """
-from bs4 import BeautifulSoup
+import bs4
 import sys
 import urllib2
 import re
@@ -38,6 +38,7 @@ def basicSearch(keyword):
     base_url = "http://scholar.google.cz"
     response = ""
     base_url = sendUrlGoogle_BASIC(keyword)
+    time.sleep(2)
     cit_link = ""
     pom_link = ""
     # time.sleep(15)
@@ -196,7 +197,7 @@ def basicSearch(keyword):
             if (not lib_link):
                 list_authors.append("0")
             else:
-                list_authors.append((str(lib_link.get('href')))))
+                list_authors.append(str(lib_link.get('href')))
 
 
 
@@ -244,6 +245,7 @@ def basicSearch(keyword):
     @param Occurence: 0-1 Vyskyt v clanku alebo v nazve diela
     @param Author: Meno autora podla ktoreho sa ma vyhladavat
     @param Venue: Vyhladavanie podla zanra diela
+   
     @param Startyear: Zaciatny rok podla ktoreho sa ma vyhladavat
     @param Endyear: Koncovy rok podla ktoreho sa maju diela vyhladavat
     @return: Slovnik pricom kazda polozka odpoveda jednemu
@@ -258,7 +260,9 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
     base_url=sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
     LeastOneWord, WithoutWords, Occurence,
     Author, Venue, StartYear, EndYear)
-    time.sleep(15)
+    print base_url
+    sys.exit(0)
+    time.sleep(2)
     try:
         response = urllib2.urlopen(urllib2.Request(
         base_url, headers={"User-Agent": "Mozilla/5.0 Cheater/1.0"}))
@@ -296,9 +300,9 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
 
         for i in range(0, number_of_cycles):
             moje = BeautifulSoup(str(results[i]))
+            
+             # parsovanie nazvu knihy
 
-            # parsovanie nazvu knihy
-            # a class="remove doc_details"
             name_of_pub = moje.find('div', attrs={'class': 'gs_a'})
 
             if (not name_of_pub):
@@ -325,11 +329,18 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
                 pom_string = re.sub(r'\s+', ' ', pom_string)
                 pom_index = 0
                 pom_index2 = 0
+                pom_index3 = 0
+                pom_string3 = ""
 
                 for m in re.finditer(",", pom_string):
                     pom_index = m.start()
                 for m in re.finditer("-", pom_string):
                     pom_index2 = m.start()
+                # parsovanie nazvu vydavatelstva
+
+                pom_string3 = pom_string[pom_index2 + 2:len(pom_string) - 2]
+                list_authors.append(pom_string3)
+
                 pom_string2 = pom_string[pom_index + 2:pom_index2 - 1]
                 pom_string = pom_string[:pom_index]
 
@@ -344,6 +355,7 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
 
             # parsovanie abstraktu
             authors = moje.find('div', attrs={'class': 'gs_rs'})
+
             if (not authors):
                 list_authors.append("0")
             else:
@@ -372,6 +384,7 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
 
             # poctu citacii clanku a parsovanie odkazu na citacie
             pubvenue = moje.find('div', attrs={'class': 'gs_fl'})
+
             pubvenue = str(pubvenue)
             pubvenue = BeautifulSoup(pubvenue)
             nazov = pubvenue.findAll('a')
@@ -402,7 +415,7 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
             if (not lib_link):
                 list_authors.append("0")
             else:
-                list_authors.append((str(lib_link.get('href')))))
+                list_authors.append(str(lib_link.get('href')))
 
 
 
@@ -444,46 +457,97 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
     @param Occurence: 0-1 Vyskyt v clanku alebo v nazve diela
     @param Author: Meno autora podla ktoreho sa ma vyhladavat
     @param Venue: Vyhladavanie podla zanra diela
+    
     @param Startyear: Zaciatny rok podla ktoreho sa ma vyhladavat
     @param Endyear: Koncovy rok podla ktoreho sa maju diela vyhladavat
-    @return: Spravny vyparsovane url
+    @return: Spravne vyparsovane url
 """
 
 
-def __sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
+def sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
                           LeastOneWord, WithoutWords, Occurence, Author,
                           Venue, StartYear, EndYear):
     http_req = ""
+    
+    if (Occurence != 1 and Occurence != 2):
+        raise ValueError("Bad Value of parameter Occurence")
+    
     try:
-        AllWords = AllWords.strip()
-        AllWords = AllWords.replace(" ", "+")
-        WithCorrectPhrase = WithCorrectPhrase.strip()
-        WithCorrectPhrase = WithCorrectPhrase.replace(" ", "+")
-        LeastOneWord = LeastOneWord.strip()
-        LeastOneWord = LeastOneWord.replace(" ", "+")
-        WithoutWords = WithoutWords.strip()
-        WithoutWords = WithoutWords.replace(" ", "+")
+        if (AllWords is not False):
+            AllWords = AllWords.strip()
+            AllWords = AllWords.replace(" ", "+")
+        else:
+            AllWords = str(AllWords)
+            AllWords = ""
+        
+        if (WithCorrectPhrase is not False):
+            WithCorrectPhrase = WithCorrectPhrase.strip()
+            WithCorrectPhrase = WithCorrectPhrase.replace(" ", "+")
+        else:
+            WithCorrectPhrase = str(WithCorrectPhrase)
+            WithCorrectPhrase = ""
+        
+        
+        if (LeastOneWord is not False):
+            LeastOneWord = LeastOneWord.strip()
+            LeastOneWord = LeastOneWord.replace(" ", "+")
+        else:
+            LeastOneWord = str(LeastOneWord)
+            LeastOneWord = ""
+        
+        if ( WithoutWords is not False):
+            WithoutWords = WithoutWords.strip()
+            WithoutWords = WithoutWords.replace(" ", "+")
+        else:
+            WithoutWords = str(WithoutWords)
+            WithoutWords = ""
+        
+        if ( Author is not False):
+            Author = Author.strip()
+            Author = Author.replace(" ", "+")
+        else:
+            Author = str(AllWords)
+            Author = ""
+        
+        if ( Venue is not False):
+            Venue = Venue.strip()
+            Venue = Venue.replace(" ", "+")
+        else:
+            Venue = str(Venue)
+            Venue = ""
+        
+        
+        
         if (Occurence == 1):
             Occurence = "any"
         if (Occurence == 2):
             Occurence = "title"
-        Author = Author.strip()
-        Author = Author.replace(" ", "+")
-        Venue = Venue.strip()
-        Venue = Venue.replace(" ", "+")
-        StartYear = StartYear.strip()
-        StartYear = StartYear.replace(" ", "+")
-        EndYear = EndYear.strip()
-        EndYear = EndYear.replace(" ", "+")
-        http_req = "http://scholar.google.cz/scholar?as_q=" + AllWords +
-                    "&as_epq=" +
-                    WithCorrectPhrase + "&as_oq=" + LeastOneWord + "&as_eq=" +
-                    WithoutWords +
-                    "&as_occt=" + Occurence + "&as_sauthors=" +
-                    Author + "&as_publication=" +
-                    Venue +
-                    "&as_ylo=" + StartYear + "&as_yhi=" + \
-                    EndYear + "&btnG=&hl=cs&as_sdt=0%2C5"
+        
+       
+        
+        if (StartYear is not False):
+            StartYear = StartYear.strip()
+        else:
+            StartYear=str(StartYear)
+            StartYear=""
+        
+        if (EndYear is not False):
+             EndYear =  EndYear.strip()
+        else:
+            EndYear=str( EndYear)
+            EndYear=""
+     
+       
+        
+        http_req = "http://scholar.google.cz/scholar?as_q=" + AllWords + \
+                    "&as_epq=" + \
+                    WithCorrectPhrase + "&as_oq=" + LeastOneWord + "&as_eq=" + \
+                    WithoutWords + \
+                    "&as_occt=" + Occurence + "&as_sauthors=" + \
+                    Author + "&as_publication=" + \
+                    Venue + \
+                    "&as_ylo=" + str(StartYear) + "&as_yhi=" + \
+                    str(EndYear) + "&btnG=&hl=cs&as_sdt=0%2C5"
     except IOError:
         raise ValueError("Uncorrect value")
 
@@ -496,7 +560,7 @@ def __sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
 """
 
 
-def __sendUrlGoogle_BASIC(keywordsPhrase):
+def sendUrlGoogle_BASIC(keywordsPhrase):
     http_req = ""
     response = ""
     try:
@@ -505,9 +569,11 @@ def __sendUrlGoogle_BASIC(keywordsPhrase):
         http_req = "http://scholar.google.cz/scholar?hl=cs&q=" + \
         keywordsPhrase + "&btnG="
     except Exception:
-        raise
+        raise ValueError("Not String")
 
     return http_req
 
 
-ahoj = basicSearch("nieco")
+ahoj = extendedSearch("Mojko vole","Mnauky","Mnauky","Mnauky",2,"Mnauky","Mnauky","1900","2000")
+print ahoj
+sys.exit(0)
