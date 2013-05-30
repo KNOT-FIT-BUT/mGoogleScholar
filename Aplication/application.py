@@ -75,11 +75,75 @@ parser.add_option("--format", dest="format",
 
 (options, args) = parser.parse_args()                
 
-if (len(args) <4):
-    raise Exception("Little number of parameter")
 
-if (len(options.engine) <1 or len(options.phrase) <1 or len(options.type) <1 or len(options.filename) <1 or len(options.format) <1):
+options.filename= str(options.filename)
+options.engine= str(options.engine)
+options.type= str(options.type)
+options.format= str(options.format)
+options.phrase= str(options.phrase)
+
+
+
+options.leastoneword= str(options.leastoneword)
+options.withoutwords= str(options.withoutwords)
+
+
+options.abstract= str(options.abstract)
+options.keywords= str(options.keywords)
+options.authoraffi= str(options.authoraffi)
+options.author= str(options.author)
+options.title= str(options.title)
+options.citation= str(options.citation)
+
+options.publicvenue= str(options.publicvenue)
+
+
+
+
+if (options.filename == "None" or options.engine == "None" or options.type == "None" or options.format == "None" or options.phrase == "None" ):
      raise Exception("Little number of parameter")
+
+
+
+pom1= str(options.endyear)
+pom2= str(options.startyear)
+pom3= str(options.mincitations)
+pom4= str(options.occurence)
+pom5= str(options.sort)
+Year=False
+zoznam=[]
+
+if (pom1 != "None" and pom2 != "None"):
+    Year=True
+    zoznam.append(options.startyear,options.endyear)
+else:
+    Year=False
+
+if (pom3 == "None"):
+    options.mincitations=False
+
+if (options.engine == "scholar" and options.type="EXTENDED" and pom4 == "None"):
+    raise Exception("Occurence must be entered")
+
+if (options.engine == "citeseersx" and options.type="EXTENDED" and pom5 == "None"):
+    raise Exception("In citeseerX sort must be entered")
+
+slovnik=dict()
+
+if (options.type != "EXTENDED" and options.type != "BASIC"):
+    raise Exception("Unknow type of search service")
+
+if (options.engine == "scholar"):
+    if (
+    
+elif (options.engine == "citeseex"):
+    
+else:
+    raise Exception("Unknown search engine")
+
+    
+
+
 
 
 
