@@ -5,7 +5,7 @@
     Implementuje zakladne vyhladavanie pomocou tejto sluzby
     Modul obsahuje 2 vyhladavacie funkcie: basicSearch a extendedSearch
 """
-import bs4
+from  bs4 import BeautifulSoup
 import sys
 import urllib2
 import re
@@ -38,7 +38,7 @@ def basicSearch(keyword):
     base_url = "http://scholar.google.cz"
     response = ""
     base_url = sendUrlGoogle_BASIC(keyword)
-    time.sleep(2)
+    
     cit_link = ""
     pom_link = ""
     # time.sleep(15)
@@ -50,6 +50,7 @@ def basicSearch(keyword):
         raise Exception("Connection error")
 
     soup = BeautifulSoup(response)
+   
     vysledok = ""
     vysledok = soup.findAll('div', attrs={'class': 'gs_ri'})
     nazov = ""
@@ -59,7 +60,7 @@ def basicSearch(keyword):
 
     number_of_cycles = 0
 
-    dic_index = 0
+    dic_index = 1
     puvenue = ""
     pubyear = ""
     snippet = ""
@@ -83,16 +84,56 @@ def basicSearch(keyword):
         for i in range(0, number_of_cycles):
             moje = BeautifulSoup(str(results[i]))
 
-            # parsovanie nazvu knihy
+            
+            #nazov knizky
+            niecoo=""
+            niecoo=moje.find('a')
+            if (not niecoo):
+                list_authors.append("0")
+            else:
+                pom_string = ""
+                pom_list = []
+
+
+                #pomocne parsovanie kvoli zisteniu ci sa nejedna o cit
+                authors = moje.find('div', attrs={'class': 'gs_rs'})
+                if (authors):
+                    pom_list=niecoo.contents
+                else:
+                    pomoz=moje.findAll('h3')
+                    najdi=0
+                    pomoz=str(pomoz[0].contents)
+                    najdi=pomoz.find("</span>")
+                    ret=""
+                    ret = pomoz[najdi:]
+                    pom_list.append(ret)
+                for p in range(0, len(pom_list)):
+
+                    pom_string = pom_string + unicode(pom_list[p])
+                pom_string = pom_string.replace("<em>", "")
+                pom_string = pom_string.replace("</em>", "")
+                pom_string = pom_string.replace("</b>", "")
+                pom_string = pom_string.replace("<b>", "")
+                pom_string = pom_string.replace("\n", "")
+                pom_string = pom_string.replace("...", "")
+                pom_string = pom_string.replace("\t", "")
+                pom_string = pom_string.strip()
+                pom_string = re.sub(r'\s+', ' ', pom_string)
+                pom_string=pom_string.replace("<br>","")
+                pom_string=pom_string.replace("</br>","")
+                list_authors.append(unicode(pom_string))
+                
+                pom_string=""
+            #autora a zanru a roku vydania 
 
             name_of_pub = moje.find('div', attrs={'class': 'gs_a'})
-
+            
             if (not name_of_pub):
                 list_authors.append("0")
             else:
                 pom_string = ""
                 pom_list = []
-                pom_list.append(name_of_pub.contents)
+                pom_list=name_of_pub.contents
 
                 for p in range(0, len(pom_list)):
 
@@ -113,7 +154,15 @@ def basicSearch(keyword):
                 pom_index2 = 0
                 pom_index3 = 0
                 pom_string3 = ""
-
+                pom_index4=pom_string.find("-")
+                pom_string8=""
+                pom_pom_index=0
+                pom_pom_index=pom_string.find(">")
+                if (pom_pom_index == -1):
+                    pom_string8=pom_string[:pom_index4-1]
+                else:
+                    pom_string8=pom_string[pom_pom_index+1:pom_index4-1]
+                    pom_string8=pom_string8.replace("</a>","")
                 for m in re.finditer(",", pom_string):
                     pom_index = m.start()
                 for m in re.finditer("-", pom_string):
@@ -121,20 +170,43 @@ def basicSearch(keyword):
                 # parsovanie nazvu vydavatelstva
 
                 pom_string3 = pom_string[pom_index2 + 2:len(pom_string) - 2]
-                list_authors.append(pom_string3)
+                if (pom_string8.find("<") == -1):
+                    list_authors.append(pom_string8)
+                else:
+                    pom_indexx=pom_string8.find("<")
+                    pom_string8=pom_string8[:pom_indexx]
+                    list_authors.append(pom_string8)
+                    
+                if (pom_index2 != pom_index4):
+                    pom_string2 = pom_string[pom_index + 2:pom_index2 - 1]
+                else:
+                    pom_string2=pom_string[pom_index2+2:]
+        
+                pom_string = pom_string[pom_index4+2:pom_index]
+                if (len(pom_string) != 0):
 
-                pom_string2 = pom_string[pom_index + 2:pom_index2 - 1]
-                pom_string = pom_string[:pom_index]
+                    pom_string = unicode(pom_string)
 
-                pom_string = unicode(pom_string)
-
-                list_authors.append(unicode(pom_string))
-
+                    if (len(pom_string) < 6):
+                        list_authors.append(unicode(pom_string))
+                        
+                    else:
+                        
+                        pom_string=pom_string[:]
+                        list_authors.append(unicode(pom_string))
+                else:
+                    list_authors.append("0")
                 # ulozenie roku vydania
-                list_authors.append(pom_string2)
-
+                if (pom_string2.find("2") == -1 and pom_string2.find("1") == -1):
+                    list_authors.append("0")
+                else:
+                    if (len(pom_string2) <= 5):
+                        list_authors.append(pom_string2)
+                    else:
+                        pom_string2=pom_string2[len(pom_string2)-4:]
+                        list_authors.append(pom_string2)
                 pom_string = ""
-
+           
             # parsovanie abstraktu
             authors = moje.find('div', attrs={'class': 'gs_rs'})
 
@@ -143,7 +215,7 @@ def basicSearch(keyword):
             else:
 
                 pom_list = []
-                pom_list.append(authors.contents)
+                pom_list=authors.contents
 
                 for p in range(0, len(pom_list)):
 
@@ -152,7 +224,7 @@ def basicSearch(keyword):
                 pom_string = pom_string.replace("</em>", "")
                 pom_string = pom_string.replace("</b>", "")
                 pom_string = pom_string.replace("<b>", "")
-                pom_string = pom_string.replace("</br", "")
+                pom_string = pom_string.replace("<br/>", "")
                 pom_string = pom_string.replace("<br>", "")
                 pom_string = pom_string.replace("\n", "")
                 pom_string = pom_string.replace("Abstract:", "")
@@ -170,26 +242,32 @@ def basicSearch(keyword):
             pubvenue = str(pubvenue)
             pubvenue = BeautifulSoup(pubvenue)
             nazov = pubvenue.findAll('a')
-
-            cit_link = str(nazov.get('href'))
+            
+            cit_link = str(nazov[0].get('href'))
+            
             if (not cit_link):
                 list_authors.append("0")
             else:
                 pom_link = "http://scholar.google.cz"
                 pom_link = pom_link + cit_link
-                list_authors.append(pom_link)
-
+                if (cit_link.find("#") == -1):
+                    list_authors.append(pom_link)
+                else:
+                    list_authors.append("0")
+            #nazov publikacie
             if (not nazov):
                 list_authors.append("0")
             else:
+                
                 nazov = nazov[0].contents
                 pom_index = 0
                 nazov = str(nazov)
                 pom_index = nazov.find(":")
-                nazov = nazov[pom_index + 2:len(nazov) - 2]
-
-                list_authors.append(nazov)
-
+                if (pom_index != -1):
+                    nazov = nazov[pom_index + 2:len(nazov) - 2]
+                    list_authors.append(nazov)
+                else:
+                    list_authors.append("0")
                 pom_string = ""
 
             # parsovanie odkazu do kniznice kde sa nachadza citacia
@@ -202,11 +280,12 @@ def basicSearch(keyword):
 
 
 
-
-        # vlozenie do slovnika
-        result_dic[dic_index]=list_authors
-        list_authors=[]
-        dic_index=dic_index+1
+      
+            # vlozenie do slovnika
+            result_dic[dic_index]=list_authors
+           
+            list_authors=[]
+            dic_index=dic_index+1
         # koniec prehladavanie hmtl suboru
         # snazim sa najst odkaz na dalsiu stranku
 
@@ -214,8 +293,11 @@ def basicSearch(keyword):
         nazov=str(nazov)
         nazov=BeautifulSoup(nazov)
         nazov=nazov.find('a')
+        print "nazov",result_dic[5][0]
+        sys.exit(0)
         # pokial som nenasiel ziadny koncim
-        if (len(nazov) < 2):
+        if ((str(nazov)) == "None"):
+            
             break
         # inak prejdem na dalsiu stranku
         else:
@@ -226,14 +308,18 @@ def basicSearch(keyword):
             base_url=""
             base_url="http://scholar.google.cz"
             base_url=base_url+str(nazov['href'])
-
+            
 
             try:
-                html_file=urllib2.urlopen(base_url)
+                html_file=urllib2.urlopen(urllib2.Request(base_url,
+                                   headers={"User-Agent":
+                                   "Mozilla/5.0 Cheater/1.0"}))
             except Exception:
                 raise Exception("Connection error")
+            
+            
             soup=BeautifulSoup(html_file)
-
+           
     # koniec parsovania funkcii
     return result_dic
 
@@ -260,9 +346,8 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
     base_url=sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
     LeastOneWord, WithoutWords, Occurence,
     Author, Venue, StartYear, EndYear)
-    print base_url
-    sys.exit(0)
-    time.sleep(2)
+
+    result_dic=dict()
     try:
         response = urllib2.urlopen(urllib2.Request(
         base_url, headers={"User-Agent": "Mozilla/5.0 Cheater/1.0"}))
@@ -279,7 +364,7 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
 
     number_of_cycles = 0
 
-    dic_index = 0
+    dic_index = 1
     puvenue = ""
     pubyear = ""
     snippet = ""
@@ -300,17 +385,57 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
 
         for i in range(0, number_of_cycles):
             moje = BeautifulSoup(str(results[i]))
+
             
-             # parsovanie nazvu knihy
+            #nazov knizky
+            niecoo=""
+            niecoo=moje.find('a')
+            if (not niecoo):
+                list_authors.append("0")
+            else:
+                pom_string = ""
+                pom_list = []
+
+
+                #pomocne parsovanie kvoli zisteniu ci sa nejedna o cit
+                authors = moje.find('div', attrs={'class': 'gs_rs'})
+                if (authors):
+                    pom_list=niecoo.contents
+                else:
+                    pomoz=moje.findAll('h3')
+                    najdi=0
+                    pomoz=str(pomoz[0].contents)
+                    najdi=pomoz.find("</span>")
+                    ret=""
+                    ret = pomoz[najdi:]
+                    pom_list.append(ret)
+                for p in range(0, len(pom_list)):
+
+                    pom_string = pom_string + unicode(pom_list[p])
+                pom_string = pom_string.replace("<em>", "")
+                pom_string = pom_string.replace("</em>", "")
+                pom_string = pom_string.replace("</b>", "")
+                pom_string = pom_string.replace("<b>", "")
+                pom_string = pom_string.replace("\n", "")
+                pom_string = pom_string.replace("...", "")
+                pom_string = pom_string.replace("\t", "")
+                pom_string = pom_string.strip()
+                pom_string = re.sub(r'\s+', ' ', pom_string)
+                pom_string=pom_string.replace("<br>","")
+                pom_string=pom_string.replace("</br>","")
+                list_authors.append(unicode(pom_string))
+                
+                pom_string=""
+            #autora a zanru a roku vydania 
 
             name_of_pub = moje.find('div', attrs={'class': 'gs_a'})
-
+            
             if (not name_of_pub):
                 list_authors.append("0")
             else:
                 pom_string = ""
                 pom_list = []
-                pom_list.append(name_of_pub.contents)
+                pom_list=name_of_pub.contents
 
                 for p in range(0, len(pom_list)):
 
@@ -331,7 +456,15 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
                 pom_index2 = 0
                 pom_index3 = 0
                 pom_string3 = ""
-
+                pom_index4=pom_string.find("-")
+                pom_string8=""
+                pom_pom_index=0
+                pom_pom_index=pom_string.find(">")
+                if (pom_pom_index == -1):
+                    pom_string8=pom_string[:pom_index4-1]
+                else:
+                    pom_string8=pom_string[pom_pom_index+1:pom_index4-1]
+                    pom_string8=pom_string8.replace("</a>","")
                 for m in re.finditer(",", pom_string):
                     pom_index = m.start()
                 for m in re.finditer("-", pom_string):
@@ -339,20 +472,43 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
                 # parsovanie nazvu vydavatelstva
 
                 pom_string3 = pom_string[pom_index2 + 2:len(pom_string) - 2]
-                list_authors.append(pom_string3)
+                if (pom_string8.find("<") == -1):
+                    list_authors.append(pom_string8)
+                else:
+                    pom_indexx=pom_string8.find("<")
+                    pom_string8=pom_string8[:pom_indexx]
+                    list_authors.append(pom_string8)
+                    
+                if (pom_index2 != pom_index4):
+                    pom_string2 = pom_string[pom_index + 2:pom_index2 - 1]
+                else:
+                    pom_string2=pom_string[pom_index2+2:]
+        
+                pom_string = pom_string[pom_index4+2:pom_index]
+                if (len(pom_string) != 0):
 
-                pom_string2 = pom_string[pom_index + 2:pom_index2 - 1]
-                pom_string = pom_string[:pom_index]
+                    pom_string = unicode(pom_string)
 
-                pom_string = unicode(pom_string)
-
-                list_authors.append(unicode(pom_string))
-
+                    if (len(pom_string) < 6):
+                        list_authors.append(unicode(pom_string))
+                        
+                    else:
+                        
+                        pom_string=pom_string[:]
+                        list_authors.append(unicode(pom_string))
+                else:
+                    list_authors.append("0")
                 # ulozenie roku vydania
-                list_authors.append(pom_string2)
-
+                if (pom_string2.find("2") == -1 and pom_string2.find("1") == -1):
+                    list_authors.append("0")
+                else:
+                    if (len(pom_string2) <= 5):
+                        list_authors.append(pom_string2)
+                    else:
+                        pom_string2=pom_string2[len(pom_string2)-4:]
+                        list_authors.append(pom_string2)
                 pom_string = ""
-
+           
             # parsovanie abstraktu
             authors = moje.find('div', attrs={'class': 'gs_rs'})
 
@@ -361,7 +517,7 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
             else:
 
                 pom_list = []
-                pom_list.append(authors.contents)
+                pom_list=authors.contents
 
                 for p in range(0, len(pom_list)):
 
@@ -370,7 +526,7 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
                 pom_string = pom_string.replace("</em>", "")
                 pom_string = pom_string.replace("</b>", "")
                 pom_string = pom_string.replace("<b>", "")
-                pom_string = pom_string.replace("</br", "")
+                pom_string = pom_string.replace("<br/>", "")
                 pom_string = pom_string.replace("<br>", "")
                 pom_string = pom_string.replace("\n", "")
                 pom_string = pom_string.replace("Abstract:", "")
@@ -388,26 +544,32 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
             pubvenue = str(pubvenue)
             pubvenue = BeautifulSoup(pubvenue)
             nazov = pubvenue.findAll('a')
-
-            cit_link = str(nazov.get('href'))
+            
+            cit_link = str(nazov[0].get('href'))
+            
             if (not cit_link):
                 list_authors.append("0")
             else:
                 pom_link = "http://scholar.google.cz"
                 pom_link = pom_link + cit_link
-                list_authors.append(pom_link)
-
+                if (cit_link.find("#") == -1):
+                    list_authors.append(pom_link)
+                else:
+                    list_authors.append("0")
+            #nazov publikacie
             if (not nazov):
                 list_authors.append("0")
             else:
+                
                 nazov = nazov[0].contents
                 pom_index = 0
                 nazov = str(nazov)
                 pom_index = nazov.find(":")
-                nazov = nazov[pom_index + 2:len(nazov) - 2]
-
-                list_authors.append(nazov)
-
+                if (pom_index != -1):
+                    nazov = nazov[pom_index + 2:len(nazov) - 2]
+                    list_authors.append(nazov)
+                else:
+                    list_authors.append("0")
                 pom_string = ""
 
             # parsovanie odkazu do kniznice kde sa nachadza citacia
@@ -420,8 +582,10 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
 
 
 
+      
             # vlozenie do slovnika
             result_dic[dic_index]=list_authors
+           
             list_authors=[]
             dic_index=dic_index+1
         # koniec prehladavanie hmtl suboru
@@ -431,22 +595,33 @@ def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
         nazov=str(nazov)
         nazov=BeautifulSoup(nazov)
         nazov=nazov.find('a')
+        print "nazov",result_dic[5][0]
+        sys.exit(0)
         # pokial som nenasiel ziadny koncim
-        if (len(nazov) <2):
+        if ((str(nazov)) == "None"):
+            
             break
         # inak prejdem na dalsiu stranku
         else:
+
+
+
+
             base_url=""
             base_url="http://scholar.google.cz"
             base_url=base_url+str(nazov['href'])
-
+            
 
             try:
-                html_file=urllib2.urlopen(base_url)
+                html_file=urllib2.urlopen(urllib2.Request(base_url,
+                                   headers={"User-Agent":
+                                   "Mozilla/5.0 Cheater/1.0"}))
             except Exception:
                 raise Exception("Connection error")
+            
+            
             soup=BeautifulSoup(html_file)
-
+           
     # koniec parsovania funkcii
     return result_dic
 """
@@ -573,7 +748,7 @@ def sendUrlGoogle_BASIC(keywordsPhrase):
 
     return http_req
 
-
-ahoj = extendedSearch("Mojko vole","Mnauky","Mnauky","Mnauky",2,"Mnauky","Mnauky","1900","2000")
+ahoj=dict()
+ahoj = extendedSearch("windows",False,False,False,2,False,False,False,False)
 print ahoj
 sys.exit(0)
