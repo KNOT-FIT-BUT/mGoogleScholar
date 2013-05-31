@@ -23,4 +23,5 @@ docs/redirect.html
 docs/toc-API_GoogleScholar_PEP8-module.html
 docs/toc-everything.html
 docs/toc.html
+scholar/API_GoogleScholar_PEP8.py
 scholar/__init__.py

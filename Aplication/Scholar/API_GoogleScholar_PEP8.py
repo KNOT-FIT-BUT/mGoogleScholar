@@ -627,7 +627,7 @@ def sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
         raise ValueError("Prohibited type of Occurence")
     if (Occurence != 1 and Occurence != 2):
         raise ValueError("Bad Value of parameter Occurence")
-
+    
     try:
         if (AllWords is not False):
             AllWords = AllWords.strip()
@@ -677,17 +677,7 @@ def sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
             Occurence = "title"
         if (StartYear is True or EndYear is True):
             raise ValueError("Prohibited value of startyear/endyear")
-        if (StartYear is not False):
-            StartYear = StartYear.strip()
-        else:
-            StartYear = str(StartYear)
-            StartYear = ""
-
-        if (EndYear is not False):
-            EndYear = EndYear.strip()
-        else:
-            EndYear = str(EndYear)
-            EndYear = ""
+        
 
         http_req = "http://scholar.google.cz/scholar?as_q=" + AllWords + \
             "&as_epq=" + \
@@ -700,7 +690,6 @@ def sendGoogle_EXTENDED(AllWords, WithCorrectPhrase,
             str(EndYear) + "&btnG=&hl=cs&as_sdt=0%2C5"
     except:
         raise ValueError("Uncorrect value")
-
     return http_req
 
 

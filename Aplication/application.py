@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 import sys
-from Citeseerx import basicSearch
-from Citeseerx import extendedSearch
 from Scholar import BasicSearch
 from Scholar import ExtendedSearch
+from Citeseerx import extendedSearch
+from Citeseerx import basicSearch
 
 from optparse import OptionParser
 import codecs
@@ -177,7 +177,8 @@ elif (options.engine == "citeseerx" and options.citation == "True"):
 
 if (pom1 != "None" and pom2 != "None"):
     Year = True
-    zoznam.append(options.startyear, options.endyear)
+    zoznam.append(options.startyear)
+    zoznam.append(options.endyear)
 else:
     Year = False
 
@@ -199,10 +200,14 @@ if (options.engine == "scholar"):
     if (options.type == "BASIC"):
         slovnik = BasicSearch(options.phrase)
     else:
+        
+        options.occurence = int(options.occurence)
+        print (options.phrase),(options.withcorrectphrase), options.leastoneword, options.withoutwords,options.occurence, (options.author),options.publicvenue, int(zoznam[0]), int(zoznam[1])
+        #sys.exit(0)
         slovnik = ExtendedSearch(
-            options.phrase, options.leastoneword, options.withoutwords,
+            options.phrase,options.withcorrectphrase, options.leastoneword, options.withoutwords,
             options.occurence, options.author,
-            options.publicenue, zoznam[0], zoznam[0])
+            options.publicvenue, int(zoznam[0]), int(zoznam[1]))
 
 elif (options.engine == "citeseerx"):
     if (options.type == "BASIC"):
@@ -210,9 +215,9 @@ elif (options.engine == "citeseerx"):
     else:
         slovnik = extendedSearch(
             options.phrase, options.title, options.author,
-            options.authorafii, options.publicvenue,
-            options.keywords, options.abstract, options.citation,
-            options.mincitations, Year, zoznam, options.sort)
+            options.authoraffi, options.publicvenue,
+            options.keywords, options.abstract, 
+           Year, zoznam,  options.mincitations,options.citation, options.sort)
 else:
     raise Exception("Unknown search engine")
 
