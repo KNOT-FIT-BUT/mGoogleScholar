@@ -1,8 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys
-# import GoogleScholar
-# import CiteSeerX
+from Citeseerx import basicSearch
+from Citeseerx import extendedSearch
+from Scholar import BasicSearch
+from CiteSeerX import ExtendedSearch
 from optparse import OptionParser
 import codecs
 
@@ -248,5 +250,4 @@ else:
         if (options.format == "NEWLINE"):
             f.write("\n")
     f.close()
-
 sys.exit(0)

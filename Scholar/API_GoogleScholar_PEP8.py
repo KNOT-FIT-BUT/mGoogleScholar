@@ -19,7 +19,7 @@ import time
 """
 
 
-def basicSearch(keyword):
+def BasicSearch(keyword):
     result_dic = dict()
     author_parse = ""
     title_parse = ""
@@ -328,7 +328,7 @@ def basicSearch(keyword):
 """
 
 
-def extendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
+def ExtendedSearch(AllWords, WithCorrectPhrase, LeastOneWord, WithoutWords,
                    Occurence, Author, Venue, StartYear, EndYear):
 
     base_url = ""

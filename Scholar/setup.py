@@ -6,7 +6,7 @@ setup(
     author='Martin Maga',
     author_email='xmagam00@stud.fit.vutbr.cz',
     packages=['scholar'],
-    scripts=['bin/API_GoogleScholar_PEP8.py'],
+    scripts=['API_GoogleScholar_PEP8.py'],
     url='http://pypi.python.org/pypi/Scholar/',
     license='LICENSE.txt',
     description='Useful scripts',
