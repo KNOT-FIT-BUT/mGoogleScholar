@@ -4,7 +4,8 @@ import sys
 from Citeseerx import basicSearch
 from Citeseerx import extendedSearch
 from Scholar import BasicSearch
-from CiteSeerX import ExtendedSearch
+from Scholar import ExtendedSearch
+
 from optparse import OptionParser
 import codecs
 
@@ -96,6 +97,14 @@ parser.add_option("--format", dest="format",
 
 (options, args) = parser.parse_args()
 
+if (len(sys.argv) < 5):
+    raise Exception("Not enough arguments")
+
+if (options.engine != "scholar" and options.engine != "citeseerx"):
+    raise Exception("Unknown search engine")
+
+if (options.format != "TAB" and options.format != "NEWLINE"):
+    raise Exception("Unknow value of format")
 
 options.filename = str(options.filename)
 options.engine = str(options.engine)
@@ -137,7 +146,7 @@ if (options.title == "None"):
     options.title = False
 
 if (options.publicvenue == "None"):
-    options.publicvenueFalse
+    options.publicvenue=False
 
 
 if (options.filename == "None" or options.engine == "None" or options.type == "None" or options.format == "None" or options.phrase == "None"):
@@ -163,8 +172,7 @@ if (options.engine == "citeseerx" and options.citation == "False"):
     options.citation = False
 elif (options.engine == "citeseerx" and options.citation == "True"):
     options.citation = True
-else:
-    raise Exception("Citation is not Bool value type")
+
 
 
 if (pom1 != "None" and pom2 != "None"):
@@ -189,9 +197,9 @@ if (options.type != "EXTENDED" and options.type != "BASIC"):
 
 if (options.engine == "scholar"):
     if (options.type == "BASIC"):
-        slovnik = basicSearch(options.phrase)
+        slovnik = BasicSearch(options.phrase)
     else:
-        slovnik = extendedSearch(
+        slovnik = ExtendedSearch(
             options.phrase, options.leastoneword, options.withoutwords,
             options.occurence, options.author,
             options.publicenue, zoznam[0], zoznam[0])
@@ -208,7 +216,7 @@ elif (options.engine == "citeseerx"):
 else:
     raise Exception("Unknown search engine")
 
-if (options.output == "stdout"):
+if (options.filename == "stdout"):
     pocet_poloziek = 0
 
     if (options.engine == "citeseerx"):
@@ -218,11 +226,12 @@ if (options.output == "stdout"):
             pocet_poloziek = 11
     else:
         pocet_poloziek = 8
-    for i in range(1, len(slovnik)):
+    for i in range(1, len(slovnik) + 1):
         sys.stdout.write(str(i))
+        sys.stdout.write(": ")
         for h in range(0, pocet_poloziek - 1):
-            sys.stdout.write(str(slovnik[i][h]))
-            sys.stdout.write(" ")
+            sys.stdout.write(slovnik[i][h])
+            sys.stdout.write("#")
         if (options.format == "TAB"):
             sys.stdout.write("\t")
         if (options.format == "NEWLINE"):
@@ -232,7 +241,7 @@ if (options.output == "stdout"):
 else:
     f = codecs.open(options.filename, 'w', 'utf-8')
     pocet_poloziek = 0
-
+    
     if (options.engine == "citeseerx"):
         if (options.citation is False):
             pocet_poloziek = 10
@@ -240,11 +249,12 @@ else:
             pocet_poloziek = 11
     else:
         pocet_poloziek = 8
-    for i in range(1, len(slovnik)):
+    for i in range(1, len(slovnik) + 1):
         f.write(str(i))
+        f.write(": ")
         for h in range(0, pocet_poloziek - 1):
-            f.write(str(slovnik[i][h]))
-            f.write(" ")
+            f.write(slovnik[i][h])
+            f.write("#")
         if (options.format == "TAB"):
             f.write("\t")
         if (options.format == "NEWLINE"):
