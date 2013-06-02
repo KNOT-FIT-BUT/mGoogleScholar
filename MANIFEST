@@ -5,7 +5,6 @@ LICENSE.txt
 MANIFEST.in
 README.md
 setup.py
-bin/scholar.py
 docs/api-objects.txt
 docs/crarr.png
 docs/epydoc.css
@@ -21,7 +20,4 @@ docs/scholar.scholar-pysrc.html
 docs/toc-everything.html
 docs/toc-scholar.scholar-module.html
 docs/toc.html
-scholar/__init__.py
 scholar/scholar.py
-scholar/test/UnitTest.py
-scholar/test/__init__.py
