@@ -1,6 +1,0 @@
-API_GoogleScholar_PEP8	API_GoogleScholar_PEP8-module.html
-API_GoogleScholar_PEP8.extendedSearch	API_GoogleScholar_PEP8-module.html#extendedSearch
-API_GoogleScholar_PEP8.sendGoogle_EXTENDED	API_GoogleScholar_PEP8-module.html#sendGoogle_EXTENDED
-API_GoogleScholar_PEP8.sendUrlGoogle_BASIC	API_GoogleScholar_PEP8-module.html#sendUrlGoogle_BASIC
-API_GoogleScholar_PEP8.basicSearch	API_GoogleScholar_PEP8-module.html#basicSearch
-API_GoogleScholar_PEP8.ahoj	API_GoogleScholar_PEP8-module.html#ahoj

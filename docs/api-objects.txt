@@ -1,0 +1,5 @@
+scholar.scholar	scholar.scholar-module.html
+scholar.scholar.ExtendedSearch	scholar.scholar-module.html#ExtendedSearch
+scholar.scholar.sendGoogle_EXTENDED	scholar.scholar-module.html#sendGoogle_EXTENDED
+scholar.scholar.sendUrlGoogle_BASIC	scholar.scholar-module.html#sendUrlGoogle_BASIC
+scholar.scholar.BasicSearch	scholar.scholar-module.html#BasicSearch
